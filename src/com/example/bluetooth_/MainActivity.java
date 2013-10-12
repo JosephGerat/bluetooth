@@ -154,7 +154,7 @@ public class MainActivity extends Activity {
 		if(!isBluetoothRunning)
 			mBluetoothAdapter.disable();
 	}
-	
+	////LALALALA
 	
 
 }
