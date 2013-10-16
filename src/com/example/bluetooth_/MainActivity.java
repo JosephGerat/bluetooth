@@ -50,53 +50,17 @@ public class MainActivity extends Activity {
 			return;
 		}else if(mBluetoothAdapter.isEnabled()){
 			isBluetoothRunning=true;
+			findDevices();
 		}else{
+			//you must turn on device
 		    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 		    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 		}
 		
-	    //cancel any prior Bluetooth device discovery
-	    if (mBluetoothAdapter.isDiscovering()){
-	    	mBluetoothAdapter.cancelDiscovery();
-	    }
-
-		
-		button=(Button)findViewById(R.id.touchMe);
-		button.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				deleteAllListItems(mList);
-				viewDevices();
-			}
-
-			private void deleteAllListItems(List<String> mList) {
-				while(mList.size()>0){
-					mList.remove(0);
-				}
-				return;
-			}
-
-		});
 
 	}
-
-	protected void viewDevices() {
-		
-		if (!mBluetoothAdapter.isEnabled()) {
-		    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-		    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-		}
-		if (!mBluetoothAdapter.isEnabled()) {
-			Toast.makeText(this, "You must turn on bluetooth on your device!", Toast.LENGTH_SHORT).show();
-			return;
-		}else
-			mBluetoothAdapter.startDiscovery();
-           		
-		
-		
-		 
+	
+	private void findDevices() {
 		// Create a BroadcastReceiver for ACTION_FOUND
 		//if receiver find some device the onReceive(..) method will run
 		final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -120,12 +84,11 @@ public class MainActivity extends Activity {
 	}
 
 	protected boolean checkItem(String name) {
-		
-		
-		Iterator<String> it=mList.iterator();
-		
-		while(it.hasNext()){
-			if(name==it.next())
+		for(int i=0;i<mList.size();i++){
+			String aha= mList.get(i);
+			
+			if(name.hashCode()==aha.hashCode())// *porovnaval som hash kod lebo obycajne stringi ako "aha 58"=="aha 58"
+				                               // mi vyhodnotilo ako odlisne co som nechapal
 				return true;
 		}
 		
@@ -154,7 +117,18 @@ public class MainActivity extends Activity {
 		if(!isBluetoothRunning)
 			mBluetoothAdapter.disable();
 	}
-	////LALALALA
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		if(mBluetoothAdapter.isEnabled()){
+			mBluetoothAdapter.startDiscovery();
+			findDevices();
+		}
+	}
+	
+	
 	
 
 }
